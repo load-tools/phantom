@@ -17,6 +17,7 @@
 #include <openssl/crypto.h>
 #include <openssl/ssl.h>
 #include <openssl/engine.h>
+#include <openssl/conf.h>
 
 namespace pd {
 
@@ -48,6 +49,11 @@ struct mgr_t {
 	}
 
 	inline mgr_t() throw() {
+		if (CONF_modules_load_file(NULL, NULL, 0) <= 0) {
+    			fprintf(stderr, "FATAL: error loading configuration file\n");
+    			ERR_print_errors_fp(stderr);
+    			exit(1);
+ 		}
 		SSL_library_init();
 		SSL_load_error_strings();
 		ENGINE_load_builtin_engines();
