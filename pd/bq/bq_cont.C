@@ -255,7 +255,7 @@ public:
 	}
 
 	inline void *&operator[](unsigned int i) {
-		if(this && i < spec_num)
+		if(i < spec_num)
 			return ((void **)this)[-2 - (int)i];
 
 		throw exception_sys_t(log::error, EINVAL, "bq_spec: %m");

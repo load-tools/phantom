@@ -101,11 +101,11 @@ class environ_t {
 		inline ~item_t() throw() { }
 
 		inline string_t const *lookup(string_t const &_key) const {
-			if(!this)
-				return NULL;
-
 			if(string_t::cmp_eq<ident_t>(key, _key))
 				return &val;
+
+			if(!next)
+				return NULL;
 
 			return next->lookup(_key);
 		}
@@ -139,7 +139,7 @@ public:
 	}
 
 	inline string_t const *lookup(string_t const &key) const {
-		return list->lookup(key);
+		return list ? list->lookup(key) : NULL;
 	}
 };
 

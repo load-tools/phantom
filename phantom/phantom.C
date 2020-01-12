@@ -188,11 +188,11 @@ class fd_list_t {
 			: list_item_t<item_t>(this, list), fd(_fd) { }
 
 		inline bool find(int _fd) {
-			if(!this)
-				return false;
-
 			if(fd == _fd)
 				return true;
+
+			if(!next)
+				return false;
 
 			return next->find(_fd);
 		}
@@ -201,7 +201,7 @@ class fd_list_t {
 	item_t *list;
 
 public:
-	inline bool find(int _fd) { return list->find(_fd); }
+	inline bool find(int _fd) { return list ? list->find(_fd) : false; }
 
 	void store(int _fd) { new item_t(_fd, list); }
 

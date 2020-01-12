@@ -222,6 +222,8 @@ public:
 			while(list->optimize(*this));
 	}
 
+	inline in_segment_t &operator=(const in_segment_t &) = default;
+
 	inline ~in_segment_t() throw() { }
 
 	operator int() const = delete;

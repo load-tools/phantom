@@ -26,25 +26,22 @@ class record_t : public val_t, public block_t {
 	public:
 
 		inline void parse(in_t::ptr_t &ptr, val_t &val) const {
-			if(this) {
+			if(next)
 				next->parse(ptr, val);
-				parse_item(ptr, val);
-			}
+			parse_item(ptr, val);
 		}
 
 		inline void print(out_t &out, int off, val_t const &val) const {
-			if(this) {
+			if(next)
 				next->print(out, off, val);
-				print_item(out, off, val);
-			}
+			print_item(out, off, val);
 		}
 
 		inline void syntax(out_t &out) const {
-			if(this) {
+			if(next)
 				next->syntax(out);
-				syntax_item(out);
-				out(' ');
-			}
+			syntax_item(out);
+			out(' ');
 		}
 
 		inline item_t() throw() : list_item_t<item_t>(this, list) { }
@@ -81,7 +78,8 @@ public:
 
 	static inline void syntax(out_t &out) {
 		out('{')(' ');
-		list->syntax(out);
+		if(list)
+			list->syntax(out);
 		out('}');
 	}
 
@@ -89,12 +87,14 @@ public:
 
 private:
 	virtual void parse_content(in_t::ptr_t &ptr) {
-		list->parse(ptr, *this);
+		if(list)
+			list->parse(ptr, *this);
 		skip_space(ptr);
 	}
 
 	virtual void print_content(out_t &out, int off) const {
-		list->print(out, off, *this);
+		if(list)
+			list->print(out, off, *this);
 	}
 
 	static item_t *list;

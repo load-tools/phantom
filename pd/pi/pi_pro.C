@@ -105,7 +105,7 @@ void pi_t::pro_t::put(pi_t *&ref, place_t &place) const throw() {
 		if(pi->bounds(&from, &to)) {
 			_size_t size = to - from;
 
-			memcpy(place._pi, from, size * sizeof(pi_t));
+			memcpy(static_cast<void*>(place._pi), from, size * sizeof(pi_t));
 
 			(--ref)->setup(pi->type(), place._pi);
 			place._pi += size;

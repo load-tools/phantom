@@ -88,6 +88,9 @@ struct {								\
     (a_node)->a_field.rbn_right_red = (a_type *) (((uintptr_t) a_right)	\
       | (((uintptr_t) (a_node)->a_field.rbn_right_red) & ((size_t)1)));	\
 } while (0)
+#define	rbp_right_set_no_color(a_type, a_field, a_node, a_right) do {		\
+    (a_node)->a_field.rbn_right_red = (a_type *) (a_right);	\
+} while (0)
 
 /* Color accessors. */
 #define	rbp_red_get(a_type, a_field, a_node)				\
@@ -380,7 +383,7 @@ struct {								\
     int rbp_i_cmp = 0;							\
     rbp_i_g = &(a_tree)->rbt_nil;					\
     rbp_left_set(a_type, a_field, &rbp_i_s, (a_tree)->rbt_root);	\
-    rbp_right_set(a_type, a_field, &rbp_i_s, &(a_tree)->rbt_nil);	\
+    rbp_right_set_no_color(a_type, a_field, &rbp_i_s, &(a_tree)->rbt_nil);	\
     rbp_black_set(a_type, a_field, &rbp_i_s);				\
     rbp_i_p = &rbp_i_s;							\
     rbp_i_c = (a_tree)->rbt_root;					\
@@ -464,7 +467,7 @@ struct {								\
     a_type *rbp_r_p, *rbp_r_c, *rbp_r_xp, *rbp_r_t, *rbp_r_u;		\
     int rbp_r_cmp;							\
     rbp_left_set(a_type, a_field, &rbp_r_s, (a_tree)->rbt_root);	\
-    rbp_right_set(a_type, a_field, &rbp_r_s, &(a_tree)->rbt_nil);	\
+    rbp_right_set_no_color(a_type, a_field, &rbp_r_s, &(a_tree)->rbt_nil);	\
     rbp_black_set(a_type, a_field, &rbp_r_s);				\
     rbp_r_p = &rbp_r_s;							\
     rbp_r_c = (a_tree)->rbt_root;					\

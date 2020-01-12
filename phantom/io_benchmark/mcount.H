@@ -113,6 +113,7 @@ private:
 			for(size_t i = 0; i < size; ++i) vals[i] += res.vals[i];
 
 			interval += res.interval;
+			return *this;
 		}
 
 		inline void swap(res_t &res) {

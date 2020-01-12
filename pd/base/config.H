@@ -37,12 +37,8 @@ class obj_t {
 		virtual x_t *get_item(string_t const &_name) const = 0;
 
 		x_t *get(string_t const &name) {
-			x_t *item = NULL;
-
-			if(this) {
-				item = get_item(name);
-				if(!item) item = next->get(name);
-			}
+			x_t *item = get_item(name);
+			if(!item && next) item = next->get(name);
 
 			return item;
 		}
@@ -56,7 +52,7 @@ class obj_t {
 
 public:
 	static inline x_t *get(string_t const &name) {
-		return list->get(name);
+		return list ? list->get(name) : NULL;
 	}
 
 	static item_t *list;
@@ -104,8 +100,8 @@ public:
 		string_t ctor_name;
 
 		void print(out_t &out, int off, string_t const &type_name) const {
-			if(!this) return;
-			next->print(out, off, type_name);
+			if(next)
+				next->print(out, off, type_name);
 
 			print_off(out, off);
 			out(type_name)(' ')(name)(' ')('=')(' ')(ctor_name)(' ');
@@ -137,12 +133,14 @@ public:
 	inline ~obj_ref_t() throw() { while(list) delete list; }
 
 	inline void print(out_t &out, int off, string_t const &type_name) const {
-		list->print(out, off, type_name);
+		if(list)
+			list->print(out, off, type_name);
 	}
 };
 
 template<typename x_t>
 class ctor_base_t : public named_list_item_t<ctor_base_t<x_t>> {
+	friend class named_list_item_t<ctor_base_t<x_t>>;
 	using named_list_item_t<ctor_base_t<x_t>>::list;
 	using named_list_item_t<ctor_base_t<x_t>>::next;
 
@@ -155,8 +153,8 @@ protected:
 	virtual void syntax_object_item(out_t &out) const = 0;
 
 	void syntax_object(out_t &out, unsigned int &num) {
-		if(!this) return;
-		next->syntax_object(out, num);
+		if(next)
+			next->syntax_object(out, num);
 
 		if(num) out(' ')('|');
 		out.lf()(' ')(' ');
@@ -167,8 +165,8 @@ protected:
 	virtual void syntax_name_item(out_t &out) const = 0;
 
 	void syntax_name(out_t &out, unsigned int &num) {
-		if(!this) return;
-		next->syntax_name(out, num);
+		if(next)
+			next->syntax_name(out, num);
 
 		if(num) out(' ')('|');
 		out.lf()(' ')(' ');
@@ -183,12 +181,14 @@ public:
 
 	static inline void syntax_object(out_t &out) {
 		unsigned int num = 0;
-		list->syntax_object(out, num);
+		if (list)
+			list->syntax_object(out, num);
 	}
 
 	static inline void syntax_name(out_t &out) {
 		unsigned int num = 0;
-		list->syntax_name(out, num);
+		if (list)
+			list->syntax_name(out, num);
 	}
 };
 
@@ -226,11 +226,7 @@ class binding_t {
 		) const = 0;
 
 		bool parse(string_t const &name, in_t::ptr_t &ptr, conf_t &conf) const {
-			return
-				this && (
-					next->parse(name, ptr, conf) || parse_item(name, ptr, conf)
-				)
-			;
+			return next && next->parse(name, ptr, conf) ? true : parse_item(name, ptr, conf);
 		}
 
 		virtual void print_item(out_t &out, int off, conf_t const &conf) const = 0;
@@ -238,14 +234,14 @@ class binding_t {
 		virtual void syntax_item(out_t &out, unsigned int &num) const = 0;
 
 		void print(out_t &out, int off, conf_t const &conf) const {
-			if(!this) return;
-			next->print(out, off, conf);
+			if(next)
+				next->print(out, off, conf);
 			print_item(out, off, conf);
 		}
 
 		void syntax(out_t &out, unsigned int &num) const {
-			if(!this) return;
-			next->syntax(out, num);
+			if(next)
+				next->syntax(out, num);
 			syntax_item(out, num);
 		}
 
@@ -262,7 +258,7 @@ public:
 	static inline bool parse_item(
 		string_t const &name, in_t::ptr_t &ptr, conf_t &conf
 	) {
-		return list->parse(name, ptr, conf);
+		return list && list->parse(name, ptr, conf);
 	}
 
 	static inline void check(in_t::ptr_t const &ptr, conf_t const &conf) {
@@ -287,12 +283,14 @@ public:
 	}
 
 	static inline void print(out_t &out, int off, conf_t const &conf) {
-		list->print(out, off, conf);
+		if (list)
+			list->print(out, off, conf);
 	}
 
 	static inline void syntax(out_t &out) {
 		unsigned int num = 0;
-		list->syntax(out, num);
+		if (list)
+			list->syntax(out, num);
 	}
 
 	template<typename val_t>

@@ -70,10 +70,9 @@ class bfd_t {
 		inline void operator delete(void *ptr) { ::free(ptr); }
 
 		file_t *find(char const *_name) {
-			return (!this || !strcmp(name, _name))
-				? this
-				: next->find(_name)
-			;
+			if (strcmp(name, _name) == 0)
+				return this;
+			return next ? next->find(_name) : NULL;
 		}
 
 		void print(uintptr_t addr, uintptr_t addr_rel, demangle_t &demangle, out_t &out);
@@ -94,7 +93,10 @@ public:
 	inline void print(
 		uintptr_t addr, uintptr_t addr_rel, char const *fname, out_t &out
 	) {
-		file_t *file = list->find(fname) ?: new file_t(fname, list);
+		file_t *file = list ? list->find(fname) : NULL;
+
+		if(!file)
+			file = new file_t(fname, list);
 
 		file->print(addr, addr_rel, demangle, out);
 	}

@@ -70,14 +70,11 @@ class alloc_t {
 		inline bool check(bool _array) { return array == _array; }
 
 		inline void print(out_t &out) {
-			if(!this)
-				return;
-
 			out.print((void const *)(this + 1))(',')(' ').print(size).lf();
 
 			trace.print(out);
-
-			next->print(out);
+			if(next)
+				next->print(out);
 		}
 
 		inline void *operator new(size_t size, size_t body_size) {

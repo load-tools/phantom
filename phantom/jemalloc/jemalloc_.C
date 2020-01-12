@@ -5148,17 +5148,17 @@ int malloc_set_state(void *ptr)
 }
 
 
-#define strong_alias(name, aliasname) \
-  extern __typeof (name) aliasname __attribute__ ((alias (#name)))
+#define strong_alias(name, aliasname, ...) \
+  extern __typeof (name) aliasname __attribute__ ((alias (#name), __VA_ARGS__))
 
-strong_alias(calloc, __libc_calloc);
-strong_alias(free, __libc_free);
+strong_alias(calloc, __libc_calloc, leaf, malloc, nothrow);
+strong_alias(free, __libc_free, leaf, nothrow);
 strong_alias(cfree, __libc_cfree);
-strong_alias(malloc, __libc_malloc);
-strong_alias(memalign, __libc_memalign);
-strong_alias(realloc, __libc_realloc);
-strong_alias(valloc, __libc_valloc);
-strong_alias(pvalloc, __libc_pvalloc);
+strong_alias(malloc, __libc_malloc, leaf, malloc, nothrow);
+strong_alias(memalign, __libc_memalign, malloc, nothrow);
+strong_alias(realloc, __libc_realloc, leaf, nothrow);
+strong_alias(valloc, __libc_valloc, malloc, nothrow);
+strong_alias(pvalloc, __libc_pvalloc, malloc, nothrow);
 strong_alias(mallopt, __libc_mallopt);
 strong_alias(mallinfo, __libc_mallinfo);
 

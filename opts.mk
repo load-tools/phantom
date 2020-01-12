@@ -25,6 +25,13 @@ FIXINC ?= -isystem . -isystem /usr/include/pd/fixinclude
 CPPFLAGS = \
 	$(FIXINC) -D_GNU_SOURCE=1 $(CPPDEFS) -Wundef
 
+
+GCCVERSIONGTEQ7 := $(shell expr `gcc -dumpversion | cut -f1 -d.` \>= 7)
+
+ifeq "$(GCCVERSIONGTEQ7)" "1"
+	FIXWARN := -Wno-implicit-fallthrough
+endif
+
 DEPS = \
 	-MD -MF deps/$(subst /,%,$(@)).d
 
@@ -33,12 +40,12 @@ CXXFLAGS = \
 	-fvisibility=hidden -fvisibility-inlines-hidden -fno-default-inline \
 	-fno-omit-frame-pointer -fno-common -fsigned-char \
 	-Wall -W -Werror -Wsign-promo -Woverloaded-virtual \
-	-Wno-ctor-dtor-privacy -Wno-non-virtual-dtor $(CPPFLAGS) $(CXXFLAGS.$(<))
+	-Wno-ctor-dtor-privacy -Wno-non-virtual-dtor $(FIXWARN) $(CPPFLAGS) $(CXXFLAGS.$(<))
 
 CFLAGS = \
 	-g -O$(OPT) $(CSTD) \
 	-fvisibility=hidden -fno-omit-frame-pointer -fno-common -fsigned-char \
-	-Wall -W -Werror $(CPPFLAGS) $(CFLAGS.$(<))
+	-Wall -W -Werror $(FIXWARN) $(CPPFLAGS) $(CFLAGS.$(<))
 
 
 %.o: %.C; $(CXX) -c $(CXXFLAGS) $(DEPS) $(<) -o $(@)

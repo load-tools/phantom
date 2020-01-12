@@ -8,11 +8,11 @@
 
 namespace pd { namespace http {
 
-static char const *(wnames[7]) = {
+static char const *wnames[7] = {
 	"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"
 };
 
-static char const *(mnames[12]) = {
+static char const *mnames[12] = {
 	"Jan", "Feb", "Mar", "Apr", "May", "Jun",
 	"Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
 };

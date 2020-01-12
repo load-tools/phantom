@@ -18,26 +18,28 @@ class enum_t {
 	val_t val;
 public:
 	class item_t : public named_list_item_t<item_t> {
+		friend class named_list_item_t<item_t>;
 		using named_list_item_t<item_t>::next;
 		using named_list_item_t<item_t>::name;
 
 		val_t val;
 
 		void print(out_t &out, val_t _val) {
-			if(!this) {
-				out(CSTR("<unknown enum value>"));
-			}
-			else if(val == _val) {
+			if(val == _val) {
 				out(name);
 			}
-			else
+			else if(next) {
 				next->print(out, _val);
+			}
+			else {
+				out(CSTR("<unknown enum value>"));
+			}
 		}
 
 		void syntax(out_t &out, unsigned int &num) {
-			if(!this) return;
+			if(next)
+				next->syntax(out, num);
 
-			next->syntax(out, num);
 			if(num) out(' ')('|')(' ');
 			out(name);
 			++num;
@@ -85,12 +87,14 @@ struct helper_t<enum_t<val_t>> {
 	}
 
 	static inline void print(out_t &out, int, enum_t<val_t> const &val) {
-		enum_t<val_t>::item_t::list->print(out, val);
+		if (enum_t<val_t>::item_t::list)
+			enum_t<val_t>::item_t::list->print(out, val);
 	}
 
 	static inline void syntax_detail(out_t &out) {
 		unsigned int num = 0;
-		enum_t<val_t>::item_t::list->syntax(out, num);
+		if (enum_t<val_t>::item_t::list)
+			enum_t<val_t>::item_t::list->syntax(out, num);
 	}
 
 	static inline void syntax(out_t &out) {
